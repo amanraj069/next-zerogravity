@@ -7,6 +7,7 @@ interface AnimatedSectionProps {
   children: ReactNode;
   className?: string;
   delay?: number;
+  id?: string;
 }
 
 // Animation variants for consistent animations
@@ -40,10 +41,12 @@ export function AnimatedSection({
   children,
   className = "",
   delay = 0,
+  id,
 }: AnimatedSectionProps) {
   return (
     <motion.div
       className={className}
+      id={id}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
