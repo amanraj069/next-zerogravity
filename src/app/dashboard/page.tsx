@@ -6,10 +6,20 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_ENDPOINTS, apiCall } from "@/config/api";
 
+interface WaitlistUser {
+  _id?: string;
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  joinedAt: string;
+  isNotified: boolean;
+}
+
 export default function Dashboard() {
   const { user, logout, isLoggedIn, isLoading: authLoading } = useAuth();
   const router = useRouter();
-  const [waitlistUsers, setWaitlistUsers] = useState<any[]>([]);
+  const [waitlistUsers, setWaitlistUsers] = useState<WaitlistUser[]>([]);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [signupEnabled, setSignupEnabled] = useState(false);
   const [signupToggleLoading, setSignupToggleLoading] = useState(false);

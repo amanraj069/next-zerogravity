@@ -37,7 +37,7 @@ export default function FeaturesSection() {
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
             Transform ambitious dreams into achievable milestones. Our
             comprehensive goal management system adapts to your unique journey,
-            whether you're building a career, learning new skills, or pursuing
+            whether you&apos;re building a career, learning new skills, or pursuing
             personal growth.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
@@ -146,7 +146,7 @@ export default function FeaturesSection() {
             Your journey, your choice. Decide what to share and what to keep
             private with granular control over every goal. Build confidence in
             your personal space while celebrating achievements with others when
-            you're ready.
+            you&apos;re ready.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
@@ -203,7 +203,7 @@ export default function FeaturesSection() {
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
               <span>
-                Discover new possibilities through others' success stories
+                Discover new possibilities through others&apos; success stories
               </span>
             </li>
             <li className="flex items-start">

@@ -45,6 +45,7 @@ export default function Login() {
         setError(result.message);
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -174,7 +175,7 @@ export default function Login() {
 
         <div className="mt-6 sm:mt-8 text-center">
           <p className="text-sm sm:text-base text-gray-600">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/signup"
               className="text-black hover:underline font-medium"

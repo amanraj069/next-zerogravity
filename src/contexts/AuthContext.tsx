@@ -49,20 +49,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   // Function to get userId from cookies (client-side)
-  const getUserIdFromCookies = (): string | null => {
-    if (typeof window === "undefined") return null;
+  // const getUserIdFromCookies = (): string | null => {
+  //   if (typeof window === "undefined") return null;
 
-    const cookies = document.cookie.split(";");
-    const userIdCookie = cookies.find((cookie) =>
-      cookie.trim().startsWith("userId=")
-    );
+  //   const cookies = document.cookie.split(";");
+  //   const userIdCookie = cookies.find((cookie) =>
+  //     cookie.trim().startsWith("userId=")
+  //   );
 
-    if (userIdCookie) {
-      return userIdCookie.split("=")[1];
-    }
+  //   if (userIdCookie) {
+  //     return userIdCookie.split("=")[1];
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
   // Check session status on component mount and when needed
   const checkSession = async () => {
