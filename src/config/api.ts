@@ -1,5 +1,8 @@
 // API configuration
-const API_BASE_URL = process.env.BACKEND_URL || "http://localhost:9000";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  process.env.BACKEND_URL ||
+  "http://localhost:9000";
 
 // API endpoints
 export const API_ENDPOINTS = {
@@ -32,6 +35,7 @@ export const apiCall = async (url: string, options: RequestInit = {}) => {
   };
 
   try {
+    console.log(`Making API call to: ${url}`);
     const response = await fetch(url, defaultOptions);
     return response;
   } catch (error) {
