@@ -8,6 +8,8 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [waitlistUsers, setWaitlistUsers] = useState<any[]>([]);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [signupEnabled, setSignupEnabled] = useState(false);
+  const [signupToggleLoading, setSignupToggleLoading] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -25,6 +27,7 @@ export default function Dashboard() {
           setUser(data.user);
           // Fetch waitlist data after successful auth
           fetchWaitlistUsers();
+          fetchSignupStatus();
         } else {
           window.location.href = "/login";
         }
@@ -60,6 +63,26 @@ export default function Dashboard() {
     }
   };
 
+  const fetchSignupStatus = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:9000/api/auth/signup-status",
+        {
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setSignupEnabled(data.enabled);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch signup status:", err);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await fetch("http://localhost:9000/api/auth/logout", {
@@ -69,6 +92,34 @@ export default function Dashboard() {
       window.location.href = "/";
     } catch (err) {
       console.error("Logout failed:", err);
+    }
+  };
+
+  const toggleSignup = async () => {
+    setSignupToggleLoading(true);
+    try {
+      const response = await fetch(
+        "http://localhost:9000/api/auth/toggle-signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ enabled: !signupEnabled }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setSignupEnabled(!signupEnabled);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to toggle signup:", err);
+    } finally {
+      setSignupToggleLoading(false);
     }
   };
 
@@ -151,6 +202,39 @@ export default function Dashboard() {
           </div>
         </div> */}
 
+        {/* Signup Toggle Section */}
+        <div className="mt-12">
+          <div className="border border-gray-200 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+              <div className="flex-1">
+                <h3 className="text-xl font-medium text-black mb-2">
+                  Signup Settings
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Enable or disable user registration on the signup page
+                </p>
+              </div>
+              <div className="flex items-center justify-end">
+                <button
+                  onClick={toggleSignup}
+                  disabled={signupToggleLoading}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 ${
+                    signupEnabled ? "bg-black" : "bg-gray-200"
+                  } ${
+                    signupToggleLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                      signupEnabled ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Waitlist Users Section */}
         <div className="mt-12">
           <div className="flex items-center justify-between mb-6">
@@ -172,47 +256,74 @@ export default function Dashboard() {
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                         Email
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Joined Date
+                      <th className="px-2 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email Sent
+                      <th className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Sent
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {waitlistUsers.map((user, index) => (
                       <tr key={user._id || index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {user.name}
+                        <td className="px-2 sm:px-6 py-4 text-sm text-gray-900">
+                          <div className="font-medium">{user.name}</div>
+                          <div className="text-xs text-gray-500 sm:hidden truncate">
+                            {user.email}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden sm:table-cell">
                           {user.email}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(user.joinedAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                        <td className="px-2 sm:px-6 py-4 text-xs sm:text-sm text-gray-500">
+                          <div className="sm:whitespace-nowrap">
+                            <span className="hidden sm:inline">
+                              {new Date(user.joinedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                }
+                              )}
+                            </span>
+                            <span className="sm:hidden">
+                              {new Date(user.joinedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "2-digit",
+                                }
+                              )}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-400 sm:hidden">
+                            {new Date(user.joinedAt).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-2 sm:px-6 py-4 text-center">
                           <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            className={`inline-flex px-1 sm:px-2 py-1 text-xs font-semibold rounded-full ${
                               user.isNotified
                                 ? "bg-green-100 text-green-800"
                                 : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
-                            {user.isNotified ? "Yes" : "No"}
+                            {user.isNotified ? "✓" : "○"}
                           </span>
                         </td>
                       </tr>
