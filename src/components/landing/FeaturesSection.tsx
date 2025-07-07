@@ -10,7 +10,7 @@ import {
 
 export default function FeaturesSection() {
   return (
-    <AnimatedFeatureSection className="max-w-6xl mx-auto px-12 lg:px-8 py-12 sm:py-16 lg:py-24">
+    <AnimatedFeatureSection className="max-w-6xl mx-auto px-8 py-12 sm:py-16 lg:py-24">
       <AnimatedSection className="text-center mb-8 sm:mb-12 lg:mb-20">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-light text-black mb-3 sm:mb-4">
           Everything You Need to Achieve Your Dreams
