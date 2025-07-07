@@ -117,6 +117,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(data.user);
         setUserId(data.userId);
         setIsLoggedIn(true);
+
+        // Store token in localStorage as fallback for cookie issues
+        if (data.token) {
+          localStorage.setItem("authToken", data.token);
+        }
+
         console.log("Login successful, user:", data.user);
         console.log("UserId:", data.userId);
         return { success: true, message: data.message };
@@ -176,6 +182,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(null);
       setUserId(null);
       setIsLoggedIn(false);
+
+      // Clear localStorage token
+      localStorage.removeItem("authToken");
     }
   };
 

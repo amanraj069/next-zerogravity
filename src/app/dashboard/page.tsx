@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { API_ENDPOINTS, apiCall } from "@/config/api";
+import { API_ENDPOINTS, apiCall, apiCallWithAuth } from "@/config/api";
 
 interface WaitlistUser {
   _id?: string;
@@ -37,7 +37,7 @@ export default function Dashboard() {
   const fetchWaitlistUsers = async () => {
     setWaitlistLoading(true);
     try {
-      const response = await apiCall(API_ENDPOINTS.WAITLIST.LIST);
+      const response = await apiCallWithAuth(API_ENDPOINTS.WAITLIST.LIST);
 
       if (response.ok) {
         const data = await response.json();
@@ -79,7 +79,7 @@ export default function Dashboard() {
   const toggleSignup = async () => {
     setSignupToggleLoading(true);
     try {
-      const response = await apiCall(API_ENDPOINTS.AUTH.TOGGLE_SIGNUP, {
+      const response = await apiCallWithAuth(API_ENDPOINTS.AUTH.TOGGLE_SIGNUP, {
         method: "POST",
         body: JSON.stringify({ enabled: !signupEnabled }),
       });
@@ -89,6 +89,12 @@ export default function Dashboard() {
         if (data.success) {
           setSignupEnabled(!signupEnabled);
         }
+      } else {
+        console.error(
+          "Toggle signup failed:",
+          response.status,
+          response.statusText
+        );
       }
     } catch (err) {
       console.error("Failed to toggle signup:", err);

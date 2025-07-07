@@ -23,7 +23,7 @@ export default function FeaturesSection() {
       <AnimatedFeatureGrid className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center mb-12 sm:mb-16 lg:mb-24">
         <AnimatedFeatureItem className="order-2 lg:order-1">
           <Image
-            src="/landing/zerogravity_productivity.webp"
+            src="/landing/zerogravity-goal.webp"
             alt="Goal Management Features"
             width={500}
             height={400}
@@ -43,22 +43,15 @@ export default function FeaturesSection() {
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>
-                Create detailed goals with rich descriptions, notes, and context
-              </span>
+              <span>Rich goal descriptions with context and notes</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>
-                Smart categorization for work, health, relationships, and more
-              </span>
+              <span>Smart categorization for work, health, and more</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>
-                Real-time progress visualization that celebrates every step
-                forward
-              </span>
+              <span>Real-time progress visualization with celebrations</span>
             </li>
           </ul>
         </AnimatedFeatureItem>
@@ -77,11 +70,11 @@ export default function FeaturesSection() {
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Dynamic progress bars with milestone celebrations</span>
+              <span>Progress bars with milestone celebrations</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Interactive checklists that break down complex goals</span>
+              <span>Interactive checklists for complex goals</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
@@ -91,7 +84,7 @@ export default function FeaturesSection() {
         </AnimatedFeatureItem>
         <AnimatedFeatureItem>
           <Image
-            src="/landing/zerogravity-goal.webp"
+            src="/landing/zerogravity-icecream.webp"
             alt="Progress Tracking"
             width={500}
             height={400}
@@ -127,11 +120,11 @@ export default function FeaturesSection() {
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Earn momentum points that fuel your motivation</span>
+              <span>Motivation points that fuel your progress</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Visual countdown timers that create positive urgency</span>
+              <span>Visual countdown timers for positive urgency</span>
             </li>
           </ul>
         </AnimatedFeatureItem>
@@ -151,17 +144,15 @@ export default function FeaturesSection() {
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Flexible privacy settings for each individual goal</span>
+              <span>Individual privacy settings for each goal</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>One-click toggle between private and public sharing</span>
+              <span>One-click toggle between private and public</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>
-                Secure, encrypted personal workspace for sensitive goals
-              </span>
+              <span>Secure, encrypted workspace for sensitive goals</span>
             </li>
           </ul>
         </AnimatedFeatureItem>
@@ -198,13 +189,11 @@ export default function FeaturesSection() {
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Connect through shared goals and mutual inspiration</span>
+              <span>Connect through shared goals and inspiration</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>
-                Discover new possibilities through others&apos; success stories
-              </span>
+              <span>Discover new possibilities through success stories</span>
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
