@@ -88,7 +88,7 @@ export default function WaitlistSection() {
 
   return (
     <AnimatedCTA className="bg-gray-50 py-16 sm:py-20">
-      <AnimatedSection className="max-w-4xl mx-auto text-center px-4">
+      <AnimatedSection className="max-w-4xl mx-auto text-center px-8">
         <AnimatedSection className="relative mb-6 sm:mb-8">
           <Image
             src="/landing/zerogravity3.webp"

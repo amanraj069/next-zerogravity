@@ -10,7 +10,7 @@ import {
 
 export default function FeaturesSection() {
   return (
-    <AnimatedFeatureSection className="max-w-6xl mx-auto px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+    <AnimatedFeatureSection className="max-w-6xl mx-auto px-12 lg:px-8 py-12 sm:py-16 lg:py-24">
       <AnimatedSection className="text-center mb-8 sm:mb-12 lg:mb-20">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-light text-black mb-3 sm:mb-4">
           Everything You Need to Achieve Your Dreams
@@ -37,8 +37,8 @@ export default function FeaturesSection() {
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
             Transform ambitious dreams into achievable milestones. Our
             comprehensive goal management system adapts to your unique journey,
-            whether you&apos;re building a career, learning new skills, or pursuing
-            personal growth.
+            whether you&apos;re building a career, learning new skills, or
+            pursuing personal growth.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
