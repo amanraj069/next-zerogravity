@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { API_ENDPOINTS, apiCall } from "@/config/api";
 
 export default function Signup() {
   const router = useRouter();
+  const { signup, user } = useAuth();
   const [signupEnabled, setSignupEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -16,16 +19,20 @@ export default function Signup() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
+    // Redirect to home if user is already logged in
+    if (user) {
+      router.push("/");
+      return;
+    }
     checkSignupStatus();
-  }, []);
+  }, [user, router]);
 
   const checkSignupStatus = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:9000/api/auth/signup-status"
-      );
+      const response = await apiCall(API_ENDPOINTS.AUTH.SIGNUP_STATUS);
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -63,24 +70,15 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:9000/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
+      const result = await signup(formData);
 
-      const data = await response.json();
-
-      if (data.success) {
-        window.location.href = "/dashboard";
+      if (result.success) {
+        router.push("/dashboard");
       } else {
-        setError(data.message || "Signup failed");
+        setError(result.message);
       }
     } catch (err) {
-      setError("Network error. Please check if the backend server is running.");
+      setError("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -127,6 +125,11 @@ export default function Signup() {
       }
     }, 100);
   };
+
+  // Don't render anything if user is logged in (will redirect)
+  if (user) {
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -240,16 +243,59 @@ export default function Signup() {
           </div>
 
           <div>
-            <input
-              type="password"
-              name="password"
-              placeholder="Setup your Password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-3 py-2.5 sm:py-3 border border-gray-300 focus:border-black focus:outline-none text-sm sm:text-base"
-              required
-              minLength={8}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Setup your Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-3 py-2.5 sm:py-3 pr-10 border border-gray-300 focus:border-black focus:outline-none text-sm sm:text-base"
+                required
+                minLength={8}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black focus:outline-none"
+              >
+                {showPassword ? (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           <button

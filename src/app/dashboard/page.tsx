@@ -2,53 +2,32 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { API_ENDPOINTS, apiCall } from "@/config/api";
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, logout, isLoggedIn, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const [waitlistUsers, setWaitlistUsers] = useState<any[]>([]);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [signupEnabled, setSignupEnabled] = useState(false);
   const [signupToggleLoading, setSignupToggleLoading] = useState(false);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch("http://localhost:9000/api/auth/me", {
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setUser(data.user);
-          // Fetch waitlist data after successful auth
-          fetchWaitlistUsers();
-          fetchSignupStatus();
-        } else {
-          window.location.href = "/login";
-        }
-      } else {
-        // Redirect to login if not authenticated
-        window.location.href = "/login";
-      }
-    } catch (err) {
-      console.error("Auth check failed:", err);
-      window.location.href = "/login";
-    } finally {
-      setIsLoading(false);
+    if (!authLoading && !isLoggedIn) {
+      router.push("/login");
+    } else if (isLoggedIn) {
+      // Fetch waitlist data after successful auth
+      fetchWaitlistUsers();
+      fetchSignupStatus();
     }
-  };
+  }, [isLoggedIn, authLoading, router]);
 
   const fetchWaitlistUsers = async () => {
     setWaitlistLoading(true);
     try {
-      const response = await fetch("http://localhost:9000/api/waitlist/list", {
-        credentials: "include",
-      });
+      const response = await apiCall(API_ENDPOINTS.WAITLIST.LIST);
 
       if (response.ok) {
         const data = await response.json();
@@ -65,12 +44,7 @@ export default function Dashboard() {
 
   const fetchSignupStatus = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:9000/api/auth/signup-status",
-        {
-          credentials: "include",
-        }
-      );
+      const response = await apiCall(API_ENDPOINTS.AUTH.SIGNUP_STATUS);
 
       if (response.ok) {
         const data = await response.json();
@@ -85,11 +59,8 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:9000/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      window.location.href = "/";
+      await logout();
+      router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
     }
@@ -98,17 +69,10 @@ export default function Dashboard() {
   const toggleSignup = async () => {
     setSignupToggleLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:9000/api/auth/toggle-signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ enabled: !signupEnabled }),
-        }
-      );
+      const response = await apiCall(API_ENDPOINTS.AUTH.TOGGLE_SIGNUP, {
+        method: "POST",
+        body: JSON.stringify({ enabled: !signupEnabled }),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -123,10 +87,18 @@ export default function Dashboard() {
     }
   };
 
-  if (isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-black">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-black">Redirecting to login...</div>
       </div>
     );
   }
@@ -135,7 +107,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white">
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-light text-black">ZeroGravity</h1>
+          <Link
+            href="/"
+            className="text-2xl font-light text-black hover:text-gray-600 transition-colors"
+          >
+            ZeroGravity
+          </Link>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">
               Welcome, {user?.firstName || user?.username}
@@ -211,7 +188,7 @@ export default function Dashboard() {
                   Signup Settings
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Enable or disable user registration on the signup page
+                  Enable User registration on the signup page
                 </p>
               </div>
               <div className="flex items-center justify-end">

@@ -24,18 +24,28 @@ A simple, minimalist black and white Next.js application with authentication fun
    npm install
    ```
 
-2. **Start the development server:**
+2. **Set up environment variables:**
+   ```bash
+   cp .env.example .env.local
+   ```
+   - Update `BACKEND_URL` in `.env.local` if your backend runs on a different port
+
+3. **Start the development server:**
    ```bash
    npm run dev
    ```
 
-3. **Make sure the backend is running:**
-   - The backend should be running on `http://localhost:9000`
+4. **Make sure the backend is running:**
+   - The backend should be running on the URL specified in your `.env.local` file (default: `http://localhost:9000`)
    - Ensure the ZeroGravity backend is started before using the app
 
-4. **Open your browser:**
+5. **Open your browser:**
    - Navigate to `http://localhost:3000`
    - You should see the minimalist landing page
+
+## Environment Configuration
+
+This project uses environment variables for API configuration. See [ENV_SETUP.md](./ENV_SETUP.md) for detailed setup instructions.
 
 ## API Integration
 

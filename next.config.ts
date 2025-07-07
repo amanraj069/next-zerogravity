@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
     // buildActivity: false,
     // buildActivityPosition: "bottom-right",
   },
+  env: {
+    BACKEND_URL: process.env.BACKEND_URL,
+  },
 };
 
 export default nextConfig;

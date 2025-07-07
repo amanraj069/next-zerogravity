@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { AnimatedCTA, AnimatedSection } from "@/components/AnimatedSection";
+import { API_ENDPOINTS, apiCall } from "@/config/api";
 
 export default function WaitlistSection() {
   const [name, setName] = useState("");
@@ -16,9 +17,7 @@ export default function WaitlistSection() {
   useEffect(() => {
     const fetchWaitlistCount = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/waitlist/count`
-        );
+        const response = await apiCall(API_ENDPOINTS.WAITLIST.COUNT);
         const data = await response.json();
         if (data.success) {
           setWaitlistCount(data.data.count);
@@ -51,19 +50,13 @@ export default function WaitlistSection() {
     setMessage("");
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/waitlist/join`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: name.trim(),
-            email: email.trim(),
-          }),
-        }
-      );
+      const response = await apiCall(API_ENDPOINTS.WAITLIST.JOIN, {
+        method: "POST",
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+        }),
+      });
 
       const data = await response.json();
 

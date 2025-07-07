@@ -6,8 +6,10 @@ import {
   AnimatedHero,
   AnimatedHeroElement,
 } from "@/components/AnimatedSection";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function HeroSection() {
+  const { isLoggedIn, isLoading } = useAuth();
   return (
     <div className="relative h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -33,22 +35,37 @@ export default function HeroSection() {
         </AnimatedHeroElement>
         <AnimatedHeroElement>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-center">
-            <button
-              onClick={() => {
-                document.getElementById("waitlist")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-              className="bg-black text-white px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:bg-gray-800 transition-colors w-full sm:w-auto text-center"
-            >
-              Get Started
-            </button>
-            <Link
-              href="/login"
-              className="border border-gray-300 text-black px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:border-black transition-colors w-full sm:w-auto text-center"
-            >
-              Sign In
-            </Link>
+            {!isLoading && (
+              <>
+                {isLoggedIn ? (
+                  <Link
+                    href="/dashboard"
+                    className="bg-black text-white px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:bg-gray-800 transition-colors w-full sm:w-auto text-center"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        document.getElementById("waitlist")?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                      }}
+                      className="bg-black text-white px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:bg-gray-800 transition-colors w-full sm:w-auto text-center"
+                    >
+                      Get Started
+                    </button>
+                    <Link
+                      href="/login"
+                      className="border border-gray-300 text-black px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:border-black transition-colors w-full sm:w-auto text-center"
+                    >
+                      Sign In
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </AnimatedHeroElement>
       </AnimatedHero>
