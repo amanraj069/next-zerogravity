@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
+// import { useAuth } from "@/contexts/AuthContext"; // Currently not used, keeping for future use
 
 interface DashboardHeaderProps {
   onLogout: () => void;
 }
 
 export default function DashboardHeader({ onLogout }: DashboardHeaderProps) {
-  const { user } = useAuth();
+  // const { user } = useAuth(); // Currently not used
 
   return (
     <header className="border-b border-gray-200 bg-white">
