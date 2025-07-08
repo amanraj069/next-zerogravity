@@ -17,7 +17,7 @@ export default function HeroSection() {
           src="/landing/zerogravity_bg.webp"
           alt="ZeroGravity Background"
           fill
-          className="object-cover opacity-10"
+          className="object-cover opacity-25"
           priority
         />
       </div>
@@ -58,7 +58,7 @@ export default function HeroSection() {
                     </button>
                     <Link
                       href="/login"
-                      className="border border-gray-300 text-black px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:border-black transition-colors w-full sm:w-auto text-center"
+                      className="border border-gray-300 bg-[#ffffff8e] hover:bg-white text-black px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-medium hover:border-black transition-colors w-full sm:w-auto text-center"
                     >
                       Sign In
                     </Link>

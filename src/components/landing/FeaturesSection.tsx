@@ -35,10 +35,8 @@ export default function FeaturesSection() {
             Master Your Goals with Precision
           </h3>
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-            Transform ambitious dreams into achievable milestones. Our
-            comprehensive goal management system adapts to your unique journey,
-            whether you&apos;re building a career, learning new skills, or
-            pursuing personal growth.
+            Transform ambitious dreams into achievable milestones with smart
+            goal management that adapts to your journey.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
@@ -63,9 +61,8 @@ export default function FeaturesSection() {
             Stay Motivated with Intelligent Insights
           </h3>
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-            Watch your progress come alive with beautiful visualizations that
-            make every achievement feel rewarding. Our smart tracking system
-            learns from your patterns to keep you engaged and motivated.
+            Beautiful visualizations and smart tracking that learns from your
+            patterns to keep you engaged.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
@@ -78,7 +75,7 @@ export default function FeaturesSection() {
             </li>
             <li className="flex items-start">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black rounded-full mr-2 sm:mr-3 mt-1.5 sm:mt-2 flex-shrink-0"></div>
-              <span>Achievement streaks and momentum tracking</span>
+              <span>Achievement streaks keep you on fire</span>
             </li>
           </ul>
         </AnimatedFeatureItem>
@@ -108,10 +105,8 @@ export default function FeaturesSection() {
             Never Miss a Moment
           </h3>
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-            Transform procrastination into progress with our intelligent
-            reminder system. Get gentle nudges at the perfect moments, earn
-            motivation points, and feel the excitement build as deadlines
-            approach.
+            Intelligent reminders that turn procrastination into progress with
+            gentle nudges and motivation points.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
@@ -136,10 +131,8 @@ export default function FeaturesSection() {
             Complete Privacy Control, Total Freedom
           </h3>
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-            Your journey, your choice. Decide what to share and what to keep
-            private with granular control over every goal. Build confidence in
-            your personal space while celebrating achievements with others when
-            you&apos;re ready.
+            Your journey, your choice. Granular privacy control lets you decide
+            what to share and what to keep private.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">
@@ -182,9 +175,8 @@ export default function FeaturesSection() {
             Find Your Tribe, Amplify Your Success
           </h3>
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-            Connect with like-minded individuals, share your achievements, and
-            find motivation through a supportive community that celebrates
-            progress and encourages growth.
+            Connect with like-minded individuals and find motivation through a
+            supportive community that celebrates progress.
           </p>
           <ul className="space-y-2 sm:space-y-3 text-gray-600 text-xs sm:text-sm lg:text-base">
             <li className="flex items-start">

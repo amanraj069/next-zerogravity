@@ -20,15 +20,18 @@ export default function Signup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSignupInProgress, setIsSignupInProgress] = useState(false);
 
   useEffect(() => {
-    // Redirect to home if user is already logged in
-    if (user) {
+    // Redirect to home if user is already logged in (but not during signup process)
+    if (user && !isSignupInProgress) {
       router.push("/");
       return;
     }
-    checkSignupStatus();
-  }, [user, router]);
+    if (!user) {
+      checkSignupStatus();
+    }
+  }, [user, router, isSignupInProgress]);
 
   const checkSignupStatus = async () => {
     try {
@@ -49,6 +52,7 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setIsSignupInProgress(true);
     setError("");
 
     if (
@@ -59,6 +63,7 @@ export default function Signup() {
     ) {
       setError("Please fill in all fields");
       setIsSubmitting(false);
+      setIsSignupInProgress(false);
       return;
     }
 
@@ -66,6 +71,7 @@ export default function Signup() {
     if (passwordError) {
       setError(passwordError);
       setIsSubmitting(false);
+      setIsSignupInProgress(false);
       return;
     }
 
@@ -73,13 +79,16 @@ export default function Signup() {
       const result = await signup(formData);
 
       if (result.success) {
+        // Redirect to dashboard after successful signup
         router.push("/dashboard");
       } else {
         setError(result.message);
+        setIsSignupInProgress(false);
       }
     } catch (err) {
       console.error("Signup error:", err);
       setError("An unexpected error occurred");
+      setIsSignupInProgress(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -127,8 +136,8 @@ export default function Signup() {
     }, 100);
   };
 
-  // Don't render anything if user is logged in (will redirect)
-  if (user) {
+  // Don't render anything if user is logged in and not during signup (will redirect)
+  if (user && !isSignupInProgress) {
     return null;
   }
 
@@ -308,7 +317,7 @@ export default function Signup() {
           </button>
         </form>
 
-        <div className="mt-6 text-center space-y-2">
+        <div className="mt-4 text-center space-y-2">
           <p className="text-sm sm:text-base text-gray-600">
             Already have an account?{" "}
             <Link
@@ -318,7 +327,9 @@ export default function Signup() {
               Sign in
             </Link>
           </p>
+        </div>
 
+        <div className="mt-6 text-center space-y-2">
           <Link
             href="/"
             className="block text-gray-500 hover:text-black text-xs sm:text-sm"

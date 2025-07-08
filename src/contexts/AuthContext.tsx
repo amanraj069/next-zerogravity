@@ -10,6 +10,7 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
+  role: "student" | "admin";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

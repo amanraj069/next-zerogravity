@@ -95,7 +95,7 @@ export default function WaitlistSection() {
             alt="Join ZeroGravity"
             width={150}
             height={112}
-            className="mx-auto opacity-20 w-32 h-24 sm:w-48 sm:h-36"
+            className="mx-auto opacity-30 w-32 h-24 sm:w-48 sm:h-36"
           />
         </AnimatedSection>
         <AnimatedSection>
