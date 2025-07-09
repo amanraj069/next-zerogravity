@@ -22,6 +22,22 @@ export const API_ENDPOINTS = {
     COUNT: `${API_BASE_URL}/api/waitlist/count`,
     JOIN: `${API_BASE_URL}/api/waitlist/join`,
   },
+  // Goals endpoints
+  GOALS: {
+    LIST: `${API_BASE_URL}/api/goals`,
+    CREATE: `${API_BASE_URL}/api/goals`,
+    UPDATE: (id: string) => `${API_BASE_URL}/api/goals/${id}`,
+    DELETE: (id: string) => `${API_BASE_URL}/api/goals/${id}`,
+    GET: (id: string) => `${API_BASE_URL}/api/goals/${id}`,
+    TOGGLE_COMPLETION: (id: string) =>
+      `${API_BASE_URL}/api/goals/${id}/toggle-completion`,
+    TOGGLE_MILESTONE: (goalId: string, milestoneId: string) =>
+      `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/toggle-completion`,
+    TOGGLE_SUBTASK: (goalId: string, milestoneId: string, subtaskId: string) =>
+      `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/subtasks/${subtaskId}/toggle-completion`,
+    BY_CATEGORY: (category: string) =>
+      `${API_BASE_URL}/api/goals/category/${category}`,
+  },
 };
 
 // Helper function for making API calls with consistent error handling

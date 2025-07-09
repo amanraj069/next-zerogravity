@@ -50,14 +50,14 @@ export default function LandingFooter() {
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4 sm:gap-8 mb-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-4 lg:py-6">
+        <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 sm:gap-8 mb-2">
           <div className="text-center sm:text-left">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="mb-4 sm:mb-4"
+              className="mb-2"
             >
               <h3 className="text-xl sm:text-xl font-semibold text-white">
                 ZeroGravity
@@ -119,7 +119,7 @@ export default function LandingFooter() {
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           transition={{ duration: 0.8 }}
-          className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-4 sm:mb-6"
+          className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-2 sm:mb-4"
         />
 
         <motion.div

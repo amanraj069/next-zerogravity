@@ -20,24 +20,30 @@ export default function LandingNavbar() {
             <>
               {isLoggedIn ? (
                 <>
-                  <button
-                    onClick={logout}
+                  <Link
+                    href="/goals"
                     className="text-gray-600 hover:text-black text-xs sm:text-sm px-2 sm:px-3 py-2 hover:bg-gray-50 transition-colors"
                   >
-                    Logout
-                  </button>
+                    Goals
+                  </Link>
                   <Link
                     href="/dashboard"
-                    className="bg-black text-white px-2 sm:px-4 py-2 text-xs sm:text-sm hover:bg-gray-800 transition-colors"
+                    className="text-gray-600 hover:text-black text-xs sm:text-sm px-2 sm:px-3 py-2 hover:bg-gray-50 transition-colors"
                   >
                     Dashboard
                   </Link>
+                  <button
+                    onClick={logout}
+                    className="bg-black text-white px-2 sm:px-4 py-2 text-xs sm:text-sm hover:bg-gray-800 transition-colors"
+                  >
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>
                   <Link
                     href="/login"
-                    className="text-black hover:text-gray-600 text-xs sm:text-sm border border-gray-300 px-2 sm:px-4 py-2 hover:border-black transition-colors"
+                    className="text-black hover:text-gray-800 text-xs sm:text-sm border border-gray-300 px-2 sm:px-4 py-2 hover:border-black transition-colors"
                   >
                     Login
                   </Link>
