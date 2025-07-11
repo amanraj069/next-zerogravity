@@ -2,36 +2,36 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Calendar,
   Target,
   CheckCircle,
-  Clock,
-  TrendingUp,
-  Award,
   Plus,
   Edit2,
   Trash2,
   AlertCircle,
 } from "lucide-react";
 import AddGoalModal from "./AddGoalModal";
+import SubtasksModal from "./SubtasksModal";
 import {
   goalsService,
   Goal,
-  Milestone,
-  Subtask,
   GoalsAnalytics,
   CreateGoalData,
+  UpdateGoalData,
 } from "@/services/goalsService";
+import { useAuth } from "@/contexts/AuthContext";
 
-type ViewMode = "list" | "timeline";
 type FilterType = "weekly" | "monthly" | "quarterly" | "yearly" | "all";
 
 const Goals: React.FC = () => {
+  const { isLoggedIn, isLoading: authLoading } = useAuth();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [editingSubtasks, setEditingSubtasks] = useState<{
+    goalId: string;
+    milestoneId: string;
+  } | null>(null);
   const [streakData, setStreakData] = useState<GoalsAnalytics>({
     currentStreak: 0,
     longestStreak: 0,
@@ -42,10 +42,15 @@ const Goals: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load goals from API
+  // Load goals from API only when authenticated
   useEffect(() => {
-    loadGoals();
-  }, []);
+    if (!authLoading && isLoggedIn) {
+      loadGoals();
+    } else if (!authLoading && !isLoggedIn) {
+      setIsLoading(false);
+      setError("Please log in to view your goals");
+    }
+  }, [authLoading, isLoggedIn]);
 
   const loadGoals = async () => {
     try {
@@ -72,28 +77,31 @@ const Goals: React.FC = () => {
     return Math.round((completedMilestones / goal.milestones.length) * 100);
   };
 
-  const calculateMilestoneProgress = (milestone: Milestone): number => {
-    if (milestone.completed) return 100;
-    if (milestone.subtasks.length === 0) return 0;
-
-    const completedSubtasks = milestone.subtasks.filter(
-      (s) => s.completed
-    ).length;
-    return Math.round((completedSubtasks / milestone.subtasks.length) * 100);
-  };
-
   const filteredGoals = goals.filter(
     (goal) => activeFilter === "all" || goal.category === activeFilter
   );
 
   const addGoal = async (goalData: CreateGoalData) => {
     try {
-      const newGoal = await goalsService.createGoal(goalData);
+      await goalsService.createGoal(goalData);
       await loadGoals(); // Refresh the list to get updated analytics
     } catch (error) {
       console.error("Error creating goal:", error);
       setError(
         error instanceof Error ? error.message : "Failed to create goal"
+      );
+    }
+  };
+
+  const updateGoal = async (goalId: string, updateData: UpdateGoalData) => {
+    try {
+      await goalsService.updateGoal(goalId, updateData);
+      await loadGoals(); // Refresh the list to get updated analytics
+      setEditingGoal(null); // Close the edit modal
+    } catch (error) {
+      console.error("Error updating goal:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to update goal"
       );
     }
   };
@@ -157,41 +165,15 @@ const Goals: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "text-red-600 bg-red-100";
-      case "medium":
-        return "text-yellow-600 bg-yellow-100";
-      case "low":
-        return "text-green-600 bg-green-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "weekly":
-        return <Calendar className="w-4 h-4" />;
-      case "monthly":
-        return <Target className="w-4 h-4" />;
-      case "quarterly":
-        return <TrendingUp className="w-4 h-4" />;
-      case "yearly":
-        return <Award className="w-4 h-4" />;
-      default:
-        return <Target className="w-4 h-4" />;
-    }
-  };
-
   // Show loading state
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-          <span className="ml-3 text-gray-600">Loading goals...</span>
+          <span className="ml-3 text-gray-600">
+            {authLoading ? "Checking authentication..." : "Loading goals..."}
+          </span>
         </div>
       </div>
     );
@@ -205,12 +187,21 @@ const Goals: React.FC = () => {
           <div className="text-center">
             <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
             <p className="text-red-600 mb-3">{error}</p>
-            <button
-              onClick={loadGoals}
-              className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors"
-            >
-              Try Again
-            </button>
+            {!isLoggedIn ? (
+              <a
+                href="/login"
+                className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors inline-block"
+              >
+                Go to Login
+              </a>
+            ) : (
+              <button
+                onClick={loadGoals}
+                className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors"
+              >
+                Try Again
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -367,40 +358,106 @@ const Goals: React.FC = () => {
                 </div>
               </div>
 
-              {/* Minimal Milestones */}
+              {/* Milestones with Subtasks */}
               {goal.milestones.length > 0 && (
-                <div className="mt-3 ml-8 space-y-2">
+                <div className="mt-3 ml-8 space-y-3">
                   {goal.milestones.map((milestone) => (
-                    <div key={milestone.id} className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          toggleMilestoneCompletion(goal._id, milestone.id)
-                        }
-                        className={`w-3 h-3 rounded border flex items-center justify-center transition-colors ${
-                          milestone.completed
-                            ? "bg-gray-600 border-gray-600 text-white"
-                            : "border-gray-300 hover:border-gray-400"
-                        }`}
-                      >
-                        {milestone.completed && (
-                          <CheckCircle className="w-2 h-2" />
-                        )}
-                      </button>
-                      <span
-                        className={`text-xs ${
-                          milestone.completed
-                            ? "line-through text-gray-400"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {milestone.title}
-                      </span>
-                      {milestone.subtasks.length > 0 && (
-                        <span className="text-xs text-gray-400">
-                          (
-                          {milestone.subtasks.filter((s) => s.completed).length}
-                          /{milestone.subtasks.length})
-                        </span>
+                    <div key={milestone.id} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              toggleMilestoneCompletion(goal._id, milestone.id)
+                            }
+                            className={`w-3 h-3 rounded border flex items-center justify-center transition-colors ${
+                              milestone.completed
+                                ? "bg-gray-600 border-gray-600 text-white"
+                                : "border-gray-300 hover:border-gray-400"
+                            }`}
+                          >
+                            {milestone.completed && (
+                              <CheckCircle className="w-2 h-2" />
+                            )}
+                          </button>
+                          <span
+                            className={`text-xs font-medium ${
+                              milestone.completed
+                                ? "line-through text-gray-400"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {milestone.title}
+                          </span>
+                          {milestone.subtasks.length > 0 && (
+                            <span className="text-xs text-gray-400">
+                              (
+                              {
+                                milestone.subtasks.filter((s) => s.completed)
+                                  .length
+                              }
+                              /{milestone.subtasks.length})
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Add Subtasks button */}
+                        <button
+                          onClick={() =>
+                            setEditingSubtasks({
+                              goalId: goal._id,
+                              milestoneId: milestone.id,
+                            })
+                          }
+                          className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 px-2 py-1 rounded transition-colors"
+                          title="Add subtasks to this milestone"
+                        >
+                          + Subtasks
+                        </button>
+                      </div>
+
+                      {/* Subtasks */}
+                      {milestone.subtasks.length > 0 ? (
+                        <div className="ml-5 space-y-1">
+                          {milestone.subtasks.map((subtask) => (
+                            <div
+                              key={subtask.id}
+                              className="flex items-center gap-2"
+                            >
+                              <button
+                                onClick={() =>
+                                  toggleSubtaskCompletion(
+                                    goal._id,
+                                    milestone.id,
+                                    subtask.id
+                                  )
+                                }
+                                className={`w-2 h-2 rounded border flex items-center justify-center transition-colors ${
+                                  subtask.completed
+                                    ? "bg-gray-500 border-gray-500"
+                                    : "border-gray-300 hover:border-gray-400"
+                                }`}
+                              >
+                                {subtask.completed && (
+                                  <div className="w-1 h-1 bg-white rounded-full" />
+                                )}
+                              </button>
+                              <span
+                                className={`text-xs ${
+                                  subtask.completed
+                                    ? "line-through text-gray-400"
+                                    : "text-gray-500"
+                                }`}
+                              >
+                                {subtask.title}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="ml-5 text-xs text-gray-400 italic">
+                          No subtasks yet. Click the &quot;+ Subtasks&quot;
+                          button above.
+                        </div>
                       )}
                     </div>
                   ))}
@@ -411,11 +468,29 @@ const Goals: React.FC = () => {
         )}
       </div>
 
-      {/* Add Goal Modal */}
+      {/* Add/Edit Goal Modal */}
       <AddGoalModal
-        isOpen={showAddGoal}
-        onClose={() => setShowAddGoal(false)}
+        isOpen={showAddGoal || !!editingGoal}
+        onClose={() => {
+          setShowAddGoal(false);
+          setEditingGoal(null);
+        }}
         onAddGoal={addGoal}
+        onUpdateGoal={updateGoal}
+        editingGoal={editingGoal}
+      />
+
+      {/* Subtasks Modal */}
+      <SubtasksModal
+        isOpen={!!editingSubtasks}
+        onClose={() => setEditingSubtasks(null)}
+        goal={
+          editingSubtasks
+            ? goals.find((g) => g._id === editingSubtasks.goalId) || null
+            : null
+        }
+        milestoneId={editingSubtasks?.milestoneId || null}
+        onUpdateComplete={loadGoals}
       />
     </div>
   );

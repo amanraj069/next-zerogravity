@@ -1,20 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Plus, Calendar, Target } from "lucide-react";
-import { CreateGoalData } from "@/services/goalsService";
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { CreateGoalData, Goal, UpdateGoalData } from "@/services/goalsService";
 
 interface AddGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddGoal: (goal: CreateGoalData) => void;
+  onUpdateGoal?: (id: string, goal: UpdateGoalData) => void;
+  editingGoal?: Goal | null;
 }
 
 const AddGoalModal: React.FC<AddGoalModalProps> = ({
   isOpen,
   onClose,
   onAddGoal,
+  onUpdateGoal,
+  editingGoal,
 }) => {
+  const isEditing = !!editingGoal;
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,24 +37,73 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
     }>
   >([]);
 
+  // Populate form when editing
+  useEffect(() => {
+    if (editingGoal) {
+      setFormData({
+        title: editingGoal.title,
+        description: editingGoal.description || "",
+        category: editingGoal.category,
+        priority: editingGoal.priority,
+        targetDate: editingGoal.targetDate.toISOString().split("T")[0],
+      });
+
+      setMilestones(
+        editingGoal.milestones.map((milestone) => ({
+          title: milestone.title,
+          description: milestone.description || "",
+          targetDate: milestone.targetDate.toISOString().split("T")[0],
+        }))
+      );
+    } else {
+      // Reset form for new goal
+      setFormData({
+        title: "",
+        description: "",
+        category: "monthly",
+        priority: "medium",
+        targetDate: "",
+      });
+      setMilestones([]);
+    }
+  }, [editingGoal]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newGoal: CreateGoalData = {
-      title: formData.title,
-      description: formData.description,
-      category: formData.category,
-      priority: formData.priority,
-      targetDate: formData.targetDate,
-      milestones: milestones.map((milestone) => ({
-        title: milestone.title,
-        description: milestone.description,
-        targetDate: milestone.targetDate,
-        subtasks: [], // For now, we'll keep this empty as the UI doesn't support adding subtasks yet
-      })),
-    };
+    if (isEditing && editingGoal && onUpdateGoal) {
+      const updateData: UpdateGoalData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        priority: formData.priority,
+        targetDate: formData.targetDate,
+        milestones: milestones.map((milestone) => ({
+          title: milestone.title,
+          description: milestone.description,
+          targetDate: milestone.targetDate,
+        })),
+      };
 
-    onAddGoal(newGoal);
+      onUpdateGoal(editingGoal._id, updateData);
+    } else {
+      const newGoal: CreateGoalData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        priority: formData.priority,
+        targetDate: formData.targetDate,
+        milestones: milestones.map((milestone) => ({
+          title: milestone.title,
+          description: milestone.description,
+          targetDate: milestone.targetDate,
+          subtasks: [], // Start with empty subtasks
+        })),
+      };
+
+      onAddGoal(newGoal);
+    }
+
     onClose();
 
     // Reset form
@@ -92,7 +147,9 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
       <div className="bg-white rounded-lg shadow-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
         <div className="p-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium text-gray-900">New Goal</h2>
+            <h2 className="text-lg font-medium text-gray-900">
+              {isEditing ? "Edit Goal" : "New Goal"}
+            </h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -139,7 +196,11 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    category: e.target.value as any,
+                    category: e.target.value as
+                      | "weekly"
+                      | "monthly"
+                      | "quarterly"
+                      | "yearly",
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-1 focus:ring-black focus:border-black text-sm"
@@ -158,7 +219,7 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    priority: e.target.value as any,
+                    priority: e.target.value as "low" | "medium" | "high",
                   }))
                 }
                 className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-1 focus:ring-black focus:border-black text-sm"
@@ -185,32 +246,32 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
             </div>
           </div>
 
-          {/* Minimal Milestones */}
+          {/* Milestones section - Available for both adding and editing */}
           {milestones.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">
                   Milestones
                 </span>
               </div>
-              {milestones.map((milestone, index) => (
+              {milestones.map((milestone, milestoneIndex) => (
                 <div
-                  key={index}
-                  className="p-3 border border-gray-100 rounded-md space-y-2"
+                  key={milestoneIndex}
+                  className="p-3 border border-gray-100 rounded-md space-y-3"
                 >
                   <div className="flex items-center justify-between">
                     <input
                       type="text"
                       value={milestone.title}
                       onChange={(e) =>
-                        updateMilestone(index, "title", e.target.value)
+                        updateMilestone(milestoneIndex, "title", e.target.value)
                       }
                       className="flex-1 px-2 py-1 border border-gray-200 rounded text-sm mr-2"
                       placeholder="Milestone title"
                     />
                     <button
                       type="button"
-                      onClick={() => removeMilestone(index)}
+                      onClick={() => removeMilestone(milestoneIndex)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
                     >
                       <X className="w-4 h-4" />
@@ -220,7 +281,11 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
                     type="date"
                     value={milestone.targetDate}
                     onChange={(e) =>
-                      updateMilestone(index, "targetDate", e.target.value)
+                      updateMilestone(
+                        milestoneIndex,
+                        "targetDate",
+                        e.target.value
+                      )
                     }
                     className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
                   />
@@ -249,7 +314,7 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({
               type="submit"
               className="flex-1 px-3 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
             >
-              Create Goal
+              {isEditing ? "Update Goal" : "Create Goal"}
             </button>
           </div>
         </form>

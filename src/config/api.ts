@@ -35,6 +35,13 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/toggle-completion`,
     TOGGLE_SUBTASK: (goalId: string, milestoneId: string, subtaskId: string) =>
       `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/subtasks/${subtaskId}/toggle-completion`,
+    // New subtask management endpoints
+    ADD_SUBTASKS: (goalId: string, milestoneId: string) =>
+      `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/subtasks`,
+    UPDATE_SUBTASKS: (goalId: string, milestoneId: string) =>
+      `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/subtasks`,
+    DELETE_SUBTASK: (goalId: string, milestoneId: string, subtaskId: string) =>
+      `${API_BASE_URL}/api/goals/${goalId}/milestones/${milestoneId}/subtasks/${subtaskId}`,
     BY_CATEGORY: (category: string) =>
       `${API_BASE_URL}/api/goals/category/${category}`,
   },
