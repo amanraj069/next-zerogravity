@@ -416,7 +416,7 @@ const Goals: React.FC = () => {
                       </div>
 
                       {/* Subtasks */}
-                      {milestone.subtasks.length > 0 ? (
+                      {milestone.subtasks.length > 0 && (
                         <div className="ml-5 space-y-1">
                           {milestone.subtasks.map((subtask) => (
                             <div
@@ -452,11 +452,6 @@ const Goals: React.FC = () => {
                               </span>
                             </div>
                           ))}
-                        </div>
-                      ) : (
-                        <div className="ml-5 text-xs text-gray-400 italic">
-                          No subtasks yet. Click the &quot;+ Subtasks&quot;
-                          button above.
                         </div>
                       )}
                     </div>
