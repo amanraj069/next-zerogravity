@@ -137,6 +137,25 @@ const Goals: React.FC = () => {
     try {
       await goalsService.toggleMilestoneCompletion(goalId, milestoneId);
       await loadGoals(); // Refresh the list
+
+      // Check if all milestones are completed and auto-complete goal
+      const goal = goals.find((g) => g._id === goalId);
+      if (goal && goal.milestones.length > 0) {
+        // Get the updated goal data after the milestone toggle
+        const { goals: updatedGoals } = await goalsService.getGoals();
+        const updatedGoal = updatedGoals.find((g) => g._id === goalId);
+
+        if (updatedGoal && !updatedGoal.completed) {
+          const allMilestonesCompleted = updatedGoal.milestones.every(
+            (m) => m.completed
+          );
+          if (allMilestonesCompleted) {
+            // Auto-complete the goal
+            await goalsService.toggleGoalCompletion(goalId);
+            await loadGoals(); // Refresh again to show the completed goal
+          }
+        }
+      }
     } catch (error) {
       console.error("Error toggling milestone completion:", error);
       setError(
@@ -157,6 +176,31 @@ const Goals: React.FC = () => {
         subtaskId
       );
       await loadGoals(); // Refresh the list
+
+      // Check if all subtasks are completed and auto-complete milestone
+      const goal = goals.find((g) => g._id === goalId);
+      if (goal) {
+        const milestone = goal.milestones.find((m) => m.id === milestoneId);
+        if (milestone && milestone.subtasks.length > 0) {
+          // Get the updated goal data after the subtask toggle
+          const { goals: updatedGoals } = await goalsService.getGoals();
+          const updatedGoal = updatedGoals.find((g) => g._id === goalId);
+          const updatedMilestone = updatedGoal?.milestones.find(
+            (m) => m.id === milestoneId
+          );
+
+          if (updatedMilestone && !updatedMilestone.completed) {
+            const allSubtasksCompleted = updatedMilestone.subtasks.every(
+              (s) => s.completed
+            );
+            if (allSubtasksCompleted) {
+              // Auto-complete the milestone
+              await goalsService.toggleMilestoneCompletion(goalId, milestoneId);
+              await loadGoals(); // Refresh again to show the completed milestone
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error("Error toggling subtask completion:", error);
       setError(
