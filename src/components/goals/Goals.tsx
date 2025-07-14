@@ -182,7 +182,6 @@ const Goals: React.FC = () => {
       if (goal) {
         const milestone = goal.milestones.find((m) => m.id === milestoneId);
         if (milestone && milestone.subtasks.length > 0) {
-          // Get the updated goal data after the subtask toggle
           const { goals: updatedGoals } = await goalsService.getGoals();
           const updatedGoal = updatedGoals.find((g) => g._id === goalId);
           const updatedMilestone = updatedGoal?.milestones.find(
@@ -196,7 +195,7 @@ const Goals: React.FC = () => {
             if (allSubtasksCompleted) {
               // Auto-complete the milestone
               await goalsService.toggleMilestoneCompletion(goalId, milestoneId);
-              await loadGoals(); // Refresh again to show the completed milestone
+              await loadGoals(); // Refreshing again to show the completed milestone
             }
           }
         }
