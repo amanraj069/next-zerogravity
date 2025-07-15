@@ -506,7 +506,7 @@ const Goals: React.FC = () => {
         )}
       </div>
 
-      {/* Add/Edit Goal Modal */}
+      {/* Add/Edit Goal Modal part */}
       <AddGoalModal
         isOpen={showAddGoal || !!editingGoal}
         onClose={() => {
