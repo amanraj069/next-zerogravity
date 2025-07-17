@@ -329,7 +329,7 @@ export default function Signup() {
                 }}
                 onSuccess={(credentialResponse) => {
                   if (credentialResponse.credential) {
-                    var credentialResponseEncoded = jwtDecode(
+                    const credentialResponseEncoded = jwtDecode(
                       credentialResponse.credential
                     );
                     console.log(credentialResponseEncoded);
