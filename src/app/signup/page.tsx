@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_ENDPOINTS, apiCall } from "@/config/api";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function Signup() {
   const router = useRouter();
@@ -214,7 +216,6 @@ export default function Signup() {
             {error}
           </div>
         )}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <input
@@ -308,16 +309,43 @@ export default function Signup() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-black text-white py-2.5 sm:py-3 px-4 font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
-          >
-            {isSubmitting ? "Creating Account..." : "Create Account"}
-          </button>
+          {/* Side-by-side buttons container */}
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 bg-black text-white py-2 sm:py-2 rounded-sm px-4 font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+            >
+              {isSubmitting ? "Creating Account..." : "Create Account"}
+            </button>
+
+            <div className="flex-1">
+              <GoogleLogin
+                containerProps={{
+                  style: {
+                    width: "100%",
+                    height: "100%",
+                  },
+                }}
+                onSuccess={(credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    var credentialResponseEncoded = jwtDecode(
+                      credentialResponse.credential
+                    );
+                    console.log(credentialResponseEncoded);
+                  } else {
+                    console.error("No credential received from Google login.");
+                  }
+                }}
+                onError={() => {
+                  console.log("Login Failed");
+                }}
+              />
+            </div>
+          </div>
         </form>
 
-        <div className="mt-4 text-center space-y-2">
+        <div className="mt-6 text-center space-y-2">
           <p className="text-sm sm:text-base text-gray-600">
             Already have an account?{" "}
             <Link
@@ -328,7 +356,6 @@ export default function Signup() {
             </Link>
           </p>
         </div>
-
         <div className="mt-6 text-center space-y-2">
           <Link
             href="/"
