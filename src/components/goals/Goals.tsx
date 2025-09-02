@@ -11,7 +11,6 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
-  Calendar,
   Clock,
 } from "lucide-react";
 import AddGoalModal from "./AddGoalModal";
