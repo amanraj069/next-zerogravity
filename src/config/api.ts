@@ -45,6 +45,18 @@ export const API_ENDPOINTS = {
     BY_CATEGORY: (category: string) =>
       `${API_BASE_URL}/api/goals/category/${category}`,
   },
+  // Daily Tasks endpoints
+  DAILY_TASKS: {
+    LIST: `${API_BASE_URL}/api/daily-tasks`,
+    CREATE: `${API_BASE_URL}/api/daily-tasks`,
+    GET: (id: string) => `${API_BASE_URL}/api/daily-tasks/${id}`,
+    UPDATE: (id: string) => `${API_BASE_URL}/api/daily-tasks/${id}`,
+    DELETE: (id: string) => `${API_BASE_URL}/api/daily-tasks/${id}`,
+    TOGGLE_COMPLETION: (id: string) =>
+      `${API_BASE_URL}/api/daily-tasks/${id}/toggle-completion`,
+    STREAK_INFO: `${API_BASE_URL}/api/daily-tasks/streak/info`,
+    COMPLETION_HISTORY: `${API_BASE_URL}/api/daily-tasks/stats/history`,
+  },
 };
 
 // Helper function for making API calls with consistent error handling

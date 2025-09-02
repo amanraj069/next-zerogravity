@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Target,
   CheckCircle,
@@ -10,9 +11,12 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import AddGoalModal from "./AddGoalModal";
 import SubtasksModal from "./SubtasksModal";
+import DailyTasks from "./DailyTasks";
 import {
   goalsService,
   Goal,
@@ -20,12 +24,28 @@ import {
   CreateGoalData,
   UpdateGoalData,
 } from "@/services/goalsService";
+import {
+  dailyTasksService,
+  DailyTasksAnalytics,
+} from "@/services/dailyTasksService";
 import { useAuth } from "@/contexts/AuthContext";
 
 type FilterType = "weekly" | "monthly" | "quarterly" | "yearly" | "all";
+type ViewType = "daily-tasks" | "goals"; // Daily tasks first, as it's now the default
 
 const Goals: React.FC = () => {
   const { isLoggedIn, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get tab from URL params, default to "daily"
+  const getInitialView = (): ViewType => {
+    const tab = searchParams.get("tab");
+    if (tab === "all") return "goals";
+    return "daily-tasks"; // Default to daily tasks
+  };
+
+  const [activeView, setActiveView] = useState<ViewType>(getInitialView());
   const [goals, setGoals] = useState<Goal[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [showAddGoal, setShowAddGoal] = useState(false);
@@ -35,7 +55,13 @@ const Goals: React.FC = () => {
     milestoneId: string;
   } | null>(null);
   const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
-  const [streakData, setStreakData] = useState<GoalsAnalytics>({
+  const [streakData, setStreakData] = useState<DailyTasksAnalytics>({
+    currentStreak: 0,
+    longestStreak: 0,
+    totalActiveTasks: 0,
+    completedToday: 0,
+  });
+  const [goalsAnalytics, setGoalsAnalytics] = useState<GoalsAnalytics>({
     currentStreak: 0,
     longestStreak: 0,
     totalCompleted: 0,
@@ -45,15 +71,46 @@ const Goals: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load goals from API only when authenticated
+  // Update URL when activeView changes
+  const updateURL = (view: ViewType) => {
+    const tab = view === "goals" ? "all" : "daily";
+    router.push(`/goals?tab=${tab}`, { scroll: false });
+  };
+
+  // Handle view change
+  const handleViewChange = (view: ViewType) => {
+    setActiveView(view);
+    updateURL(view);
+  };
+
+  // Update activeView when URL changes
   useEffect(() => {
-    if (!authLoading && isLoggedIn) {
+    const tab = searchParams.get("tab");
+    const newView: ViewType = tab === "all" ? "goals" : "daily-tasks";
+    if (newView !== activeView) {
+      setActiveView(newView);
+    }
+  }, [searchParams, activeView]);
+
+  // Set initial URL if no tab parameter exists
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (!tab) {
+      // Set default to daily tasks
+      router.replace("/goals?tab=daily", { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  // Load goals from API only when authenticated and viewing goals
+  useEffect(() => {
+    if (!authLoading && isLoggedIn && activeView === "goals") {
       loadGoals();
+      loadAnalytics(); // Load daily tasks analytics for streak info
     } else if (!authLoading && !isLoggedIn) {
       setIsLoading(false);
       setError("Please log in to view your goals");
     }
-  }, [authLoading, isLoggedIn]);
+  }, [authLoading, isLoggedIn, activeView]);
 
   const loadGoals = async () => {
     try {
@@ -61,12 +118,21 @@ const Goals: React.FC = () => {
       setError(null);
       const { goals: fetchedGoals, analytics } = await goalsService.getGoals();
       setGoals(fetchedGoals);
-      setStreakData(analytics);
+      setGoalsAnalytics(analytics);
     } catch (error) {
       console.error("Error loading goals:", error);
       setError(error instanceof Error ? error.message : "Failed to load goals");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadAnalytics = async () => {
+    try {
+      const analyticsData = await dailyTasksService.getStreakInfo();
+      setStreakData(analyticsData);
+    } catch (error) {
+      console.error("Error loading analytics:", error);
     }
   };
 
@@ -218,56 +284,15 @@ const Goals: React.FC = () => {
     }
   };
 
-  // Show loading state
-  if (authLoading || isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 px-4 py-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-            <span className="ml-3 text-gray-600">
-              {authLoading ? "Checking authentication..." : "Loading goals..."}
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // If showing daily tasks, render the DailyTasks component inside the layout
+  const renderContent = () => {
+    if (activeView === "daily-tasks") {
+      return <DailyTasks />;
+    }
 
-  // Show error state
-  if (error) {
+    // Goals content
     return (
-      <div className="min-h-screen bg-gray-50 px-4 py-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
-              <p className="text-red-600 mb-3">{error}</p>
-              {!isLoggedIn ? (
-                <a
-                  href="/login"
-                  className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors inline-block"
-                >
-                  Go to Login
-                </a>
-              ) : (
-                <button
-                  onClick={loadGoals}
-                  className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors"
-                >
-                  Try Again
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <>
         {/* Mobile-optimized Header */}
         <div className="bg-white rounded-lg p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -276,11 +301,13 @@ const Goals: React.FC = () => {
                 Goals
               </h1>
               <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-500 mt-1">
-                <span>{streakData.totalCompleted} completed</span>
+                <span>{goalsAnalytics?.totalCompleted || 0} completed</span>
                 <span>•</span>
                 <span>{streakData.currentStreak} day streak</span>
                 <span>•</span>
-                <span>{streakData.completionRate}% completion rate</span>
+                <span>
+                  {goalsAnalytics?.completionRate || 0}% completion rate
+                </span>
               </div>
             </div>
             <button
@@ -344,7 +371,15 @@ const Goals: React.FC = () => {
             filteredGoals.map((goal) => (
               <div
                 key={goal._id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                className={`rounded-lg shadow-sm border overflow-hidden ${
+                  goal.completed
+                    ? "bg-gray-50/50 border-gray-200"
+                    : goal.priority === "high"
+                    ? "bg-red-50/30 border-red-100"
+                    : goal.priority === "medium"
+                    ? "bg-amber-50/30 border-amber-100"
+                    : "bg-emerald-50/30 border-emerald-100"
+                }`}
               >
                 {/* Goal Header - Mobile optimized */}
                 <div className="p-4">
@@ -377,12 +412,12 @@ const Goals: React.FC = () => {
                               {goal.category}
                             </span>
                             <span
-                              className={`text-xs px-2 py-0.5 rounded ${
+                              className={`text-xs px-2 py-0.5 rounded font-medium ${
                                 goal.priority === "high"
-                                  ? "bg-red-100 text-red-600"
+                                  ? "bg-red-50 text-red-500 border border-red-200"
                                   : goal.priority === "medium"
-                                  ? "bg-yellow-100 text-yellow-600"
-                                  : "bg-green-100 text-green-600"
+                                  ? "bg-amber-50 text-amber-600 border border-amber-200"
+                                  : "bg-emerald-50 text-emerald-600 border border-emerald-200"
                               }`}
                             >
                               {goal.priority}
@@ -598,6 +633,90 @@ const Goals: React.FC = () => {
           milestoneId={editingSubtasks?.milestoneId || null}
           onUpdateComplete={loadGoals}
         />
+      </>
+    );
+  };
+
+  // Show loading state
+  if (authLoading || (activeView === "goals" && isLoading)) {
+    return (
+      <div className="min-h-screen bg-gray-50 px-4 py-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+            <span className="ml-3 text-gray-600">
+              {authLoading ? "Checking authentication..." : "Loading goals..."}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 px-4 py-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
+              <p className="text-red-600 mb-3">{error}</p>
+              {!isLoggedIn ? (
+                <a
+                  href="/login"
+                  className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors inline-block"
+                >
+                  Go to Login
+                </a>
+              ) : (
+                <button
+                  onClick={loadGoals}
+                  className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors"
+                >
+                  Try Again
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Main Navigation - Always visible */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="flex">
+            <button
+              onClick={() => handleViewChange("daily-tasks")}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                (activeView as ViewType) === "daily-tasks"
+                  ? "border-black text-black bg-gray-50"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <Clock className="w-4 h-4 inline mr-2" />
+              Daily Tasks
+            </button>
+            <button
+              onClick={() => handleViewChange("goals")}
+              className={`flex-1 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                (activeView as ViewType) === "goals"
+                  ? "border-black text-black bg-gray-50"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <Target className="w-4 h-4 inline mr-2" />
+              Goals
+            </button>
+          </div>
+        </div>
+
+        {/* Dynamic Content */}
+        {renderContent()}
       </div>
     </div>
   );
