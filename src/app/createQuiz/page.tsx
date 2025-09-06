@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
+import ZeroGravityLoading from "@/components/ZeroGravityLoading";
 
 interface StartCreateQuizPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -34,17 +35,17 @@ function StartCreateQuizContent({ searchParams }: StartCreateQuizPageProps) {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100">
       <LandingNavbar />
       <main className="flex-1 flex items-center justify-center px-6 py-10">
-        <div className="w-full max-w-3xl bg-white rounded-xl shadow-sm p-8">
+        <div className="w-full max-w-3xl bg-white shadow-sm p-8">
           <h1 className="text-2xl font-semibold mb-4">Create Quiz</h1>
           <div className="space-y-4">
             <input
-              className="w-full border rounded px-4 py-3 text-base"
+              className="w-full border px-4 py-3 text-base"
               placeholder="Quiz title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <textarea
-              className="w-full border rounded px-4 py-3 text-base min-h-[120px]"
+              className="w-full border px-4 py-3 text-base min-h-[120px]"
               placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -52,7 +53,7 @@ function StartCreateQuizContent({ searchParams }: StartCreateQuizPageProps) {
           </div>
           <div className="mt-6 flex justify-end">
             <button
-              className="px-5 py-3 bg-black text-white rounded"
+              className="px-5 py-3 bg-black text-white"
               onClick={proceed}
               disabled={!title}
             >
@@ -70,7 +71,14 @@ export default function StartCreateQuizPage({
   searchParams,
 }: StartCreateQuizPageProps) {
   return (
-    <Suspense fallback={<div className="p-6">Loading...</div>}>
+    <Suspense
+      fallback={
+        <ZeroGravityLoading
+          title="Loading Quiz Creator"
+          subtitle="Preparing the quiz creation experience..."
+        />
+      }
+    >
       <StartCreateQuizContent searchParams={searchParams} />
     </Suspense>
   );

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { adminListPastQuizzes } from "@/services/quizzesService";
 import { useAuth } from "@/contexts/AuthContext";
 import { AdminQuizListItem } from "@/types/quiz";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function AdminQuizzesPage() {
   const { user, isLoading } = useAuth();
@@ -26,7 +27,10 @@ export default function AdminQuizzesPage() {
     })();
   }, [isAdmin, search, page, limit]);
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (isLoading)
+    return (
+      <LoadingSpinner size="lg" text="Loading admin panel..." fullScreen />
+    );
   if (!isAdmin) return <div className="p-6">Admin access required.</div>;
 
   const maxPage = Math.max(1, Math.ceil(total / limit));

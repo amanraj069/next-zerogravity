@@ -21,6 +21,7 @@ import {
   DailyTasksAnalytics,
 } from "@/services/dailyTasksService";
 import AddDailyTaskModal from "./AddDailyTaskModal";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const DailyTasks: React.FC = () => {
   const { isLoggedIn, isLoading: authLoading } = useAuth();
@@ -169,18 +170,13 @@ const DailyTasks: React.FC = () => {
   // Show loading state
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 px-4 py-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-            <span className="ml-3 text-gray-600">
-              {authLoading
-                ? "Checking authentication..."
-                : "Loading daily tasks..."}
-            </span>
-          </div>
-        </div>
-      </div>
+      <LoadingSpinner
+        size="lg"
+        text={
+          authLoading ? "Checking authentication..." : "Loading daily tasks..."
+        }
+        fullScreen
+      />
     );
   }
 

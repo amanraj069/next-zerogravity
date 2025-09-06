@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { API_ENDPOINTS, apiCall } from "@/config/api";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import ZeroGravityLoading from "@/components/ZeroGravityLoading";
 
 export default function Signup() {
   const router = useRouter();
@@ -145,9 +146,10 @@ export default function Signup() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-black">Loading...</div>
-      </div>
+      <ZeroGravityLoading
+        title="Checking Signup Status"
+        subtitle="Verifying registration availability..."
+      />
     );
   }
 

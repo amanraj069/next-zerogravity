@@ -124,6 +124,14 @@ export const endQuiz = async (quizId: string) => {
   return res.json();
 };
 
+export const leaveQuiz = async (quizId: string, quizUserId: string) => {
+  const res = await apiCallWithAuth(API_ENDPOINTS.QUIZZES.LEAVE(quizId), {
+    method: "POST",
+    body: JSON.stringify({ quizUserId }),
+  });
+  return res.json();
+};
+
 export const clearParticipants = async (quizId: string) => {
   const res = await apiCallWithAuth(
     `${API_ENDPOINTS.QUIZZES.GET(quizId)}/participants/clear`,

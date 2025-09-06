@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ZeroGravityLoading from "@/components/ZeroGravityLoading";
 import { listUserQuizzes } from "@/services/quizzesService";
 import { Quiz } from "@/types/quiz";
 import Image from "next/image";
@@ -105,17 +106,20 @@ export default function QuizzesPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <LoadingSpinner />
-      </div>
+      <ZeroGravityLoading
+        title="Authenticating"
+        subtitle="Verifying your cosmic credentials..."
+      />
     );
   }
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-black">Redirecting to login...</div>
-      </div>
+      <ZeroGravityLoading
+        title="Redirecting"
+        subtitle="Taking you to the login portal..."
+        showNavigation={false}
+      />
     );
   }
 

@@ -65,6 +65,7 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/api/quizzes/${quizId}/publish`,
     GET: (quizId: string) => `${API_BASE_URL}/api/quizzes/${quizId}`,
     JOIN: `${API_BASE_URL}/api/quizzes/join`,
+    LEAVE: (quizId: string) => `${API_BASE_URL}/api/quizzes/${quizId}/leave`,
     PARTICIPANTS: (quizId: string) =>
       `${API_BASE_URL}/api/quizzes/${quizId}/participants`,
     START: (quizId: string) => `${API_BASE_URL}/api/quizzes/${quizId}/start`,

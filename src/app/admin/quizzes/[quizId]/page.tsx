@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { adminQuizDetails } from "@/services/quizzesService";
 import { useAuth } from "@/contexts/AuthContext";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   AdminQuizDetails,
   QuizParticipant,
@@ -26,9 +27,13 @@ export default function AdminQuizDetailPage() {
     })();
   }, [isAdmin, quizId]);
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (isLoading)
+    return (
+      <LoadingSpinner size="lg" text="Loading admin panel..." fullScreen />
+    );
   if (!isAdmin) return <div className="p-6">Admin access required.</div>;
-  if (!details) return <div className="p-6">Loading details...</div>;
+  if (!details)
+    return <LoadingSpinner size="lg" text="Loading quiz details..." />;
 
   const q = details.quiz;
   const participants = details.participants || [];
