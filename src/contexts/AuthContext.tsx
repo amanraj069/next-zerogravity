@@ -11,6 +11,7 @@ interface User {
   firstName: string;
   lastName: string;
   role: "student" | "admin";
+  subscription: "basic" | "pro";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

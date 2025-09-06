@@ -27,6 +27,12 @@ export default function LandingNavbar() {
                     Goals
                   </Link>
                   <Link
+                    href="/quizzes"
+                    className="text-gray-600 hover:text-black text-xs sm:text-sm px-2 sm:px-3 py-2 hover:bg-gray-50 transition-colors"
+                  >
+                    Quizzes
+                  </Link>
+                  <Link
                     href="/dashboard"
                     className="text-gray-600 hover:text-black text-xs sm:text-sm px-2 sm:px-3 py-2 hover:bg-gray-50 transition-colors"
                   >

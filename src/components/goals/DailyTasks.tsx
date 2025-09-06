@@ -41,6 +41,33 @@ const DailyTasks: React.FC = () => {
 
   // Load tasks and analytics
   useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const fetchedTasks = await dailyTasksService.getDailyTasks(
+          selectedDate
+        );
+        setTasks(fetchedTasks);
+      } catch (error) {
+        console.error("Error loading daily tasks:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to load daily tasks"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const loadAnalytics = async () => {
+      try {
+        const analyticsData = await dailyTasksService.getStreakInfo();
+        setAnalytics(analyticsData);
+      } catch (error) {
+        console.error("Error loading analytics:", error);
+      }
+    };
+
     if (!authLoading && isLoggedIn) {
       loadTasks();
       loadAnalytics();
@@ -50,36 +77,14 @@ const DailyTasks: React.FC = () => {
     }
   }, [authLoading, isLoggedIn, selectedDate]);
 
-  const loadTasks = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const fetchedTasks = await dailyTasksService.getDailyTasks(selectedDate);
-      setTasks(fetchedTasks);
-    } catch (error) {
-      console.error("Error loading daily tasks:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to load daily tasks"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadAnalytics = async () => {
-    try {
-      const analyticsData = await dailyTasksService.getStreakInfo();
-      setAnalytics(analyticsData);
-    } catch (error) {
-      console.error("Error loading analytics:", error);
-    }
-  };
-
   const addTask = async (taskData: CreateDailyTaskData) => {
     try {
       await dailyTasksService.createDailyTask(taskData);
-      await loadTasks();
-      await loadAnalytics();
+      // Reload tasks and analytics
+      const fetchedTasks = await dailyTasksService.getDailyTasks(selectedDate);
+      setTasks(fetchedTasks);
+      const analyticsData = await dailyTasksService.getStreakInfo();
+      setAnalytics(analyticsData);
     } catch (error) {
       console.error("Error creating daily task:", error);
       setError(
@@ -94,8 +99,11 @@ const DailyTasks: React.FC = () => {
   ) => {
     try {
       await dailyTasksService.updateDailyTask(taskId, updateData);
-      await loadTasks();
-      await loadAnalytics();
+      // Reload tasks and analytics
+      const fetchedTasks = await dailyTasksService.getDailyTasks(selectedDate);
+      setTasks(fetchedTasks);
+      const analyticsData = await dailyTasksService.getStreakInfo();
+      setAnalytics(analyticsData);
       setEditingTask(null);
     } catch (error) {
       console.error("Error updating daily task:", error);
@@ -108,8 +116,11 @@ const DailyTasks: React.FC = () => {
   const deleteTask = async (taskId: string) => {
     try {
       await dailyTasksService.deleteDailyTask(taskId);
-      await loadTasks();
-      await loadAnalytics();
+      // Reload tasks and analytics
+      const fetchedTasks = await dailyTasksService.getDailyTasks(selectedDate);
+      setTasks(fetchedTasks);
+      const analyticsData = await dailyTasksService.getStreakInfo();
+      setAnalytics(analyticsData);
     } catch (error) {
       console.error("Error deleting daily task:", error);
       setError(
@@ -124,8 +135,11 @@ const DailyTasks: React.FC = () => {
         taskId,
         selectedDate
       );
-      await loadTasks();
-      await loadAnalytics();
+      // Reload tasks and analytics
+      const fetchedTasks = await dailyTasksService.getDailyTasks(selectedDate);
+      setTasks(fetchedTasks);
+      const analyticsData = await dailyTasksService.getStreakInfo();
+      setAnalytics(analyticsData);
 
       // Show success message if all tasks are completed
       if (result.allTasksCompleted && result.isCompleted) {
@@ -188,7 +202,24 @@ const DailyTasks: React.FC = () => {
                 </a>
               ) : (
                 <button
-                  onClick={loadTasks}
+                  onClick={async () => {
+                    try {
+                      setIsLoading(true);
+                      setError(null);
+                      const fetchedTasks =
+                        await dailyTasksService.getDailyTasks(selectedDate);
+                      setTasks(fetchedTasks);
+                    } catch (error) {
+                      console.error("Error loading daily tasks:", error);
+                      setError(
+                        error instanceof Error
+                          ? error.message
+                          : "Failed to load daily tasks"
+                      );
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
                   className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors"
                 >
                   Try Again
