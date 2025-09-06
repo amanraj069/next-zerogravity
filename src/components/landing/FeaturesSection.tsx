@@ -194,20 +194,6 @@ export default function FeaturesSection() {
               </span>
             </li>
           </ul>
-
-          <div className="pt-2">
-            <div className="text-gray-700 text-sm">
-              Live Quizzes (beta): Create and host quizzes like Quizizz.
-            </div>
-            <div className="mt-2 flex gap-4 text-sm">
-              <a href="/quizzes/create" className="text-blue-600">
-                Create Quiz
-              </a>
-              <a href="/joinQuiz" className="text-blue-600">
-                Join Quiz
-              </a>
-            </div>
-          </div>
         </AnimatedFeatureItem>
       </AnimatedFeatureGrid>
     </AnimatedFeatureSection>
